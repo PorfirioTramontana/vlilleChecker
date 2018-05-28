@@ -18,40 +18,40 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
+import static android.support.test.espresso.matcher.ViewMatchers.withClassName;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withParent;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.is;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class HomeActivityTest {
+public class HomeActivityTest2 {
 
     @Rule
     public ActivityTestRule<com.vlille.checker.ui.HomeActivity> mActivityTestRule = new ActivityTestRule<>(com.vlille.checker.ui.HomeActivity.class);
 
     @Test
-    public void homeActivityTest() {
-        // Added a sleep statement to match the app's execution delay.
-        // The recommended way to handle such scenarios is to use Espresso idling resources:
-        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
-        try {
-            Thread.sleep(3500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    public void homeActivityTest2() {
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
 
-        ViewInteraction actionMenuItemView = onView(
-                allOf(withId(R.id.main_menu_refresh), withContentDescription("Refresh"),
+        ViewInteraction appCompatTextView = onView(
+                allOf(withId(R.id.title), withText("Update stations list"),
                         childAtPosition(
                                 childAtPosition(
-                                        withId(R.id.action_bar),
-                                        1),
+                                        withParent(childAtPosition(
+                                                withClassName(is("android.widget.PopupWindow$PopupBackgroundView")),
+                                                0)),
+                                        0),
                                 0),
                         isDisplayed()));
-        actionMenuItemView.perform(click());
+        appCompatTextView.perform(click());
 
     }
 
