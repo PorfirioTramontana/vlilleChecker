@@ -14,7 +14,6 @@ import android.widget.AdapterView;
 
 import com.vlille.checker.R;
 import com.vlille.checker.db.StationEntityManager;
-import com.vlille.checker.model.Station;
 import com.vlille.checker.model.StationHolder;
 import com.vlille.checker.ui.HomeActivity;
 import com.vlille.checker.ui.IntentCommunication;
@@ -51,7 +50,7 @@ abstract class StationsListFragment extends ListFragment
     /**
      * The stations list used by the adapter.
      */
-    private List<Station> stations;
+    private List<com.vlille.checker.model.Station> stations;
 
     /**
      * The ListView adapter.
@@ -152,7 +151,7 @@ abstract class StationsListFragment extends ListFragment
                 Log.d(TAG, "Item clicked = " + position + " " + index);
                 if (index < stations.size()) {
                     // Select the station and notify the adapter.
-                    Station clickedStation = stations.get((int) index);
+                    com.vlille.checker.model.Station clickedStation = stations.get((int) index);
                     Log.d(TAG, "Station clicked = " + clickedStation.getName());
 
                     Intent intent = new Intent(getHomeActivity(), StationInfoActivity.class);
@@ -194,7 +193,7 @@ abstract class StationsListFragment extends ListFragment
         if (stationHolder != null && stationHolder.isStarredChanged()) {
             cancelAsyncTask();
 
-            final Station station = stationHolder.getStation();
+            final com.vlille.checker.model.Station station = stationHolder.getStation();
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -270,7 +269,7 @@ abstract class StationsListFragment extends ListFragment
                     stations.size())
             );
 
-            List<Station> subStations = stations.subList(firstVisiblePosition, lastVisibleRowPosition);
+            List<com.vlille.checker.model.Station> subStations = stations.subList(firstVisiblePosition, lastVisibleRowPosition);
 
             asyncTask = getNewAsyncTask();
             asyncTask.execute(subStations);
@@ -324,18 +323,18 @@ abstract class StationsListFragment extends ListFragment
         swipeLayout.setRefreshing(visible);
     }
 
-    public void setStations(List<Station> stations) {
+    public void setStations(List<com.vlille.checker.model.Station> stations) {
         Log.d(TAG, String.format("Set %d stations", stations.size()));
 
         this.stations = stations;
     }
 
-    public List<Station> getStations() {
+    public List<com.vlille.checker.model.Station> getStations() {
         return stations;
     }
 
     @Override
-    public void update(Station station) {
+    public void update(com.vlille.checker.model.Station station) {
         stationEntityManager.update(station);
     }
 
@@ -363,7 +362,7 @@ abstract class StationsListFragment extends ListFragment
         }
 
         @Override
-        protected void onPostExecute(List<Station> result) {
+        protected void onPostExecute(List<com.vlille.checker.model.Station> result) {
             super.onPostExecute(result);
             Log.d(TAG, "onPostExecute");
 

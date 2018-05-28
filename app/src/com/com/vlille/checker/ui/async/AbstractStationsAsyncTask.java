@@ -10,12 +10,17 @@ import com.vlille.checker.ui.delegate.StationUpdateDelegate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Task to retrieve details from a stations list.
  */
 public abstract class AbstractStationsAsyncTask extends AsyncTask<List<Station>, Void, List<Station>> {
-
+    //ADDED
+    public static Semaphore task_AbstractStationsAsync_Finish;
+    public static Semaphore task_AbstractStationsAsync_Start;
+    //END ADDED
     private static final String TAG = "AsyncStationTaskUpdater";
 
     private final HomeActivity homeActivity;
@@ -45,6 +50,17 @@ public abstract class AbstractStationsAsyncTask extends AsyncTask<List<Station>,
 
     @Override
     protected List<Station> doInBackground(List<Station>... params) {
+        //ADDED
+        if (task_AbstractStationsAsync_Start != null) {
+            try {
+                task_AbstractStationsAsync_Start.acquire();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            task_AbstractStationsAsync_Start.release();
+        }
+        //END ADDED
+        
         Log.d(TAG, "Launch background update...");
 
         final List<Station> stations = new ArrayList<>(params[0]);
@@ -56,7 +72,19 @@ public abstract class AbstractStationsAsyncTask extends AsyncTask<List<Station>,
         for (Station station : stations) {
             if (isCancelled()) {
                 Log.d(TAG, "Task has been cancelled.");
-
+                //ADDED
+                if (task_AbstractStationsAsync_Finish != null) {
+                    try {
+                        if (!task_AbstractStationsAsync_Finish.tryAcquire(15L, TimeUnit.SECONDS)) {
+                            Log.d("TEST", "TASK: TIMEOUT task i");
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    Log.d("TEST", "TASK: End task i");
+                    task_AbstractStationsAsync_Finish.release();
+                }
+                //END ADDED
                 return stations;
             }
 
@@ -75,7 +103,19 @@ public abstract class AbstractStationsAsyncTask extends AsyncTask<List<Station>,
 
         plateformUnstableState = countStationsFetchInError == stations.size();
         platformUpdateIssueState = countStationsWithLastUpdateExceedingTwoMinutes == stations.size();
-
+        //ADDED
+        if (task_AbstractStationsAsync_Finish != null) {
+            try {
+                if (!task_AbstractStationsAsync_Finish.tryAcquire(15L, TimeUnit.SECONDS)) {
+                    Log.d("TEST", "TASK: TIMEOUT task i");
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            Log.d("TEST", "TASK: End task i");
+            task_AbstractStationsAsync_Finish.release();
+        }
+        //END ADDED
         return stations;
     }
 

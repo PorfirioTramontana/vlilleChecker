@@ -5,16 +5,16 @@ import java.io.Serializable;
 public class StationHolder implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private Station station;
+    private com.vlille.checker.model.Station station;
     private int index;
     private boolean initialStar;
 
-    public StationHolder(Station station, int index) {
+    public StationHolder(com.vlille.checker.model.Station station, int index) {
         this.station = station;
         this.index = index;
     }
 
-    public Station getStation() {
+    public com.vlille.checker.model.Station getStation() {
         return station;
     }
 
