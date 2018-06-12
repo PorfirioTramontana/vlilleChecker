@@ -10,13 +10,14 @@ import com.vlille.checker.ui.HomeActivity;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import it.unina.ptramont.TaskTestUtility;
+
 /**
  * An {@link AsyncTask} to refresh stations from vlille.fr.
  */
 public class DBUpdaterAsyncTask extends AsyncTask<Void, Void, Boolean> {
     //ADDED
-    public static Semaphore task_DBUpdaterAsync_Finish;
-    public static Semaphore task_DBUpdaterAsync_Start;
+    public static Semaphore[] sem = new Semaphore[2];
     //END ADDED
     private HomeActivity homeActivity;
     private com.vlille.checker.ui.async.AsyncTaskResultListener asyncListener;
@@ -37,30 +38,13 @@ public class DBUpdaterAsyncTask extends AsyncTask<Void, Void, Boolean> {
     @Override
     protected Boolean doInBackground(Void... params) {
         //ADDED
-        if (task_DBUpdaterAsync_Start != null) {
-            try {
-                task_DBUpdaterAsync_Start.acquire();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            task_DBUpdaterAsync_Start.release();
-        }
+        TaskTestUtility.startTask(sem);
         //END ADDED
 
         boolean b = new DBUpdater().update();
         
         //ADDED
-        if (task_DBUpdaterAsync_Finish != null) {
-            try {
-                if (!task_DBUpdaterAsync_Finish.tryAcquire(15L, TimeUnit.SECONDS)) {
-                    Log.d("TEST", "TASK: TIMEOUT task i");
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            Log.d("TEST", "TASK: End task i");
-            task_DBUpdaterAsync_Finish.release();
-        }
+        TaskTestUtility.finishTask(sem);
         //END ADDED
         return b;
     }

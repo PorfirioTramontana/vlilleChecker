@@ -9,13 +9,14 @@ import com.vlille.checker.model.SetStationsInfo;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import it.unina.ptramont.TaskTestUtility;
+
 /**
  * Retrieve all stations information from the local asset xml.
  */
 public class SetStationsInfoAsyncTask extends AsyncTask<Void, Void, SetStationsInfo> {
     //ADDED
-    public static Semaphore task_SetStationsInfoAsync_Finish;
-    public static Semaphore task_SetStationsInfoAsync_Start;
+    public static Semaphore[] sem = new Semaphore[2];
     //END ADDED
     private SetStationsDelegate delegate;
 
@@ -26,30 +27,14 @@ public class SetStationsInfoAsyncTask extends AsyncTask<Void, Void, SetStationsI
     @Override
     protected SetStationsInfo doInBackground(Void... params) {
         //ADDED
-        if (task_SetStationsInfoAsync_Start != null) {
-            try {
-                task_SetStationsInfoAsync_Start.acquire();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            task_SetStationsInfoAsync_Start.release();
-        }
+        TaskTestUtility.startTask(sem);
+
         //END ADDED
 
         SetStationsInfo ssi= StationRepository.getSetStationsInfo();
 
         //ADDED
-        if (task_SetStationsInfoAsync_Finish != null) {
-            try {
-                if (!task_SetStationsInfoAsync_Finish.tryAcquire(15L, TimeUnit.SECONDS)) {
-                    Log.d("TEST", "TASK: TIMEOUT task i");
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            Log.d("TEST", "TASK: End task i");
-            task_SetStationsInfoAsync_Finish.release();
-        }
+        TaskTestUtility.finishTask(sem);
         //END ADDED
 
         return ssi;

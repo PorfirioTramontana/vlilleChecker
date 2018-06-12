@@ -36,23 +36,7 @@ public class UIAutomatorAsyncTaskZeroTest {
     private static final int LAUNCH_TIMEOUT = 5000;
     private static final String STRING_TO_BE_TYPED = "UiAutomator";
     private UiDevice mDevice;
-
-    private static void DoSwipe(UiObject u) {
-        UiDevice deviceInstance = UiDevice.getInstance();
-        int dHeight =  deviceInstance.getDisplayHeight();
-        int dWidth = deviceInstance.getDisplayWidth();
-        int xScrollPosition = dWidth/2;
-        int yScrollStop = 200+dHeight/2;
-        UiDevice.getInstance().swipe(
-                xScrollPosition,
-                0,
-                xScrollPosition,
-                yScrollStop,
-                100
-        );
-    }
-
-
+/*
     @Test
     public void ZeroTest() throws InterruptedException, UiObjectNotFoundException, RemoteException {
         // Test di prova
@@ -145,7 +129,7 @@ public class UIAutomatorAsyncTaskZeroTest {
         //End Test
     }
 
-
+*/
 }
 
 

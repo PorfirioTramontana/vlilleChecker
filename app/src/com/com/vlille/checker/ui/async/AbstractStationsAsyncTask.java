@@ -13,13 +13,14 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import it.unina.ptramont.TaskTestUtility;
+
 /**
  * Task to retrieve details from a stations list.
  */
 public abstract class AbstractStationsAsyncTask extends AsyncTask<List<Station>, Void, List<Station>> {
     //ADDED
-    public static Semaphore task_AbstractStationsAsync_Finish;
-    public static Semaphore task_AbstractStationsAsync_Start;
+    public static Semaphore[] sem = new Semaphore[2];
     //END ADDED
     private static final String TAG = "AsyncStationTaskUpdater";
 
@@ -51,14 +52,7 @@ public abstract class AbstractStationsAsyncTask extends AsyncTask<List<Station>,
     @Override
     protected List<Station> doInBackground(List<Station>... params) {
         //ADDED
-        if (task_AbstractStationsAsync_Start != null) {
-            try {
-                task_AbstractStationsAsync_Start.acquire();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            task_AbstractStationsAsync_Start.release();
-        }
+        TaskTestUtility.startTask(sem);
         //END ADDED
         
         Log.d(TAG, "Launch background update...");
@@ -73,17 +67,7 @@ public abstract class AbstractStationsAsyncTask extends AsyncTask<List<Station>,
             if (isCancelled()) {
                 Log.d(TAG, "Task has been cancelled.");
                 //ADDED
-                if (task_AbstractStationsAsync_Finish != null) {
-                    try {
-                        if (!task_AbstractStationsAsync_Finish.tryAcquire(15L, TimeUnit.SECONDS)) {
-                            Log.d("TEST", "TASK: TIMEOUT task i");
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    Log.d("TEST", "TASK: End task i");
-                    task_AbstractStationsAsync_Finish.release();
-                }
+                TaskTestUtility.finishTask(sem);
                 //END ADDED
                 return stations;
             }
@@ -104,17 +88,7 @@ public abstract class AbstractStationsAsyncTask extends AsyncTask<List<Station>,
         plateformUnstableState = countStationsFetchInError == stations.size();
         platformUpdateIssueState = countStationsWithLastUpdateExceedingTwoMinutes == stations.size();
         //ADDED
-        if (task_AbstractStationsAsync_Finish != null) {
-            try {
-                if (!task_AbstractStationsAsync_Finish.tryAcquire(15L, TimeUnit.SECONDS)) {
-                    Log.d("TEST", "TASK: TIMEOUT task i");
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            Log.d("TEST", "TASK: End task i");
-            task_AbstractStationsAsync_Finish.release();
-        }
+        TaskTestUtility.finishTask(sem);
         //END ADDED
         return stations;
     }

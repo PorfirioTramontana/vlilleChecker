@@ -36,7 +36,7 @@ public class UIAutomatorAsyncTaskTest {
     private static final String STRING_TO_BE_TYPED = "UiAutomator";
     private UiDevice mDevice;
 
-
+/*
     @Test
     public void Test1() throws InterruptedException, UiObjectNotFoundException, RemoteException {
         // (START(APP) | START(SS)) --> UI(SS) --> START (SS) --> END(SS) --> END (SS)
@@ -309,7 +309,7 @@ public class UIAutomatorAsyncTaskTest {
         //End Test
     }
 
-
+*/
 }
 
 
