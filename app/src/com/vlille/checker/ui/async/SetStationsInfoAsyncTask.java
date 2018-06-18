@@ -5,10 +5,15 @@ import android.os.AsyncTask;
 import com.vlille.checker.dataset.StationRepository;
 import com.vlille.checker.model.SetStationsInfo;
 
+import java.util.concurrent.Semaphore;
+
+import it.unina.ptramont.TaskTestUtility;
+
 /**
  * Retrieve all stations information from the local asset xml.
  */
 public class SetStationsInfoAsyncTask extends AsyncTask<Void, Void, SetStationsInfo> {
+    public static Semaphore[] sem = new Semaphore[2];
 
     private SetStationsDelegate delegate;
 
@@ -18,7 +23,11 @@ public class SetStationsInfoAsyncTask extends AsyncTask<Void, Void, SetStationsI
 
     @Override
     protected SetStationsInfo doInBackground(Void... params) {
-        return StationRepository.getSetStationsInfo();
+        TaskTestUtility.startTask(sem);
+        SetStationsInfo ssi = StationRepository.getSetStationsInfo();
+        TaskTestUtility.finishTask(sem);
+
+        return ssi;
     }
 
     @Override

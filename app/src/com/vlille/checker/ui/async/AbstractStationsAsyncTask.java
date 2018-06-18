@@ -10,11 +10,15 @@ import com.vlille.checker.ui.delegate.StationUpdateDelegate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
+
+import it.unina.ptramont.TaskTestUtility;
 
 /**
  * Task to retrieve details from a stations list.
  */
 public abstract class AbstractStationsAsyncTask extends AsyncTask<List<Station>, Void, List<Station>> {
+    public static Semaphore[] sem = new Semaphore[2];
 
     private static final String TAG = "AsyncStationTaskUpdater";
 
@@ -46,6 +50,8 @@ public abstract class AbstractStationsAsyncTask extends AsyncTask<List<Station>,
     @Override
     protected List<Station> doInBackground(List<Station>... params) {
         Log.d(TAG, "Launch background update...");
+        TaskTestUtility.startTask(sem);
+
 
         final List<Station> stations = new ArrayList<>(params[0]);
         int countStationsFetchInError = 0;
@@ -56,6 +62,7 @@ public abstract class AbstractStationsAsyncTask extends AsyncTask<List<Station>,
         for (Station station : stations) {
             if (isCancelled()) {
                 Log.d(TAG, "Task has been cancelled.");
+                TaskTestUtility.finishTask(sem);
 
                 return stations;
             }
@@ -75,6 +82,7 @@ public abstract class AbstractStationsAsyncTask extends AsyncTask<List<Station>,
 
         plateformUnstableState = countStationsFetchInError == stations.size();
         platformUpdateIssueState = countStationsWithLastUpdateExceedingTwoMinutes == stations.size();
+        TaskTestUtility.finishTask(sem);
 
         return stations;
     }

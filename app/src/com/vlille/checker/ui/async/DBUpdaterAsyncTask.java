@@ -6,10 +6,15 @@ import com.vlille.checker.R;
 import com.vlille.checker.db.DBUpdater;
 import com.vlille.checker.ui.HomeActivity;
 
+import java.util.concurrent.Semaphore;
+
+import it.unina.ptramont.TaskTestUtility;
+
 /**
  * An {@link AsyncTask} to refresh stations from vlille.fr.
  */
 public class DBUpdaterAsyncTask extends AsyncTask<Void, Void, Boolean> {
+    public static Semaphore[] sem = new Semaphore[2];
 
     private HomeActivity homeActivity;
     private AsyncTaskResultListener asyncListener;
@@ -29,7 +34,11 @@ public class DBUpdaterAsyncTask extends AsyncTask<Void, Void, Boolean> {
 
     @Override
     protected Boolean doInBackground(Void... params) {
-        return new DBUpdater().update();
+        TaskTestUtility.startTask(sem);
+        Boolean b = new DBUpdater().update();
+        TaskTestUtility.finishTask(sem);
+
+        return b;
     }
 
     @Override
